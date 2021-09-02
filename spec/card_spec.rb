@@ -1,6 +1,6 @@
 require 'card'
 describe Oystercard do 
-
+  let(:station) { double :station }
   context 'I want money on my card' do
 
     it 'checks that a new oystercard is created with a balance of 0' do
@@ -39,49 +39,43 @@ describe Oystercard do
 
   context 'I need to touch in and out' do
 
-    it 'checks that card knows it is in a journey' do
-      expect(subject.in_journey).to eq false
-    end
-
     it 'checks that card responds to touch_in' do
       expect(subject).to respond_to(:touch_in)
-    end
-
-
-    it 'checks that a card touches in and is registered' do
-      subject.top_up(1)
-      subject.touch_in
-      expect(subject.in_journey).to eq true
     end
 
     it 'checks that card responds to touch_out' do
       expect(subject).to respond_to(:touch_out)
     end
 
-    it 'checks that a card touches out and is registered' do
-      subject.top_up(1)
-      subject.touch_in
-      subject.touch_out
-      expect(subject.in_journey).to eq false
-    end
   end
 
   context 'I need to have the minimum amount (£1) for a single journey' do
     it 'checks that a card without any balance cannot check in' do
-      expect{ subject.touch_in }.to raise_error "Insufficient funds"
+      expect{ subject.touch_in(station) }.to raise_error "Insufficient funds"
     end
   end
 
   context 'When my journey is complete, I need the correct amount deducted from my card' do
     it 'reduces the cards current balance by 1' do
       subject.top_up(2)
-      subject.touch_in
+      subject.touch_in(station)
       expect {subject.touch_out}.to change{subject.balance}.by(-1)
     end
   end
 
   context 'I need to know where Ive travelled from.' do
-    
+    it 'keeps track of the entry station after touching in' do
+      subject.top_up(1)
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq station
+    end
+
+    it 'clears the entry station on touching out' do
+      subject.top_up(1)
+      subject.touch_in(station)
+      subject.touch_out
+      expect(subject.entry_station).to eq nil
+    end
   end
 
 end
