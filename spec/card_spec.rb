@@ -27,16 +27,15 @@ describe Oystercard do
     end
   end
 
-  context "I need my fare deducated from my card" do
+  # context "I need my fare deducated from my card" do
 
-    it 'deducts money from my balance' do
-      expect(subject).to respond_to(:deduct).with(1).argument
-      subject.top_up(10)
-      subject.deduct(5)
-      expect(subject.balance).to eq(5)
-    end
+    # it 'deducts money from my balance' do
+    #   subject.top_up(10)
+    #   subject.deduct(5)
+    #   expect(subject.balance).to eq(5)
+    # end
 
-  end
+  # end
 
   context 'I need to touch in and out' do
 
@@ -77,8 +76,12 @@ describe Oystercard do
     it 'reduces the cards current balance by 1' do
       subject.top_up(2)
       subject.touch_in
-      expect {subject.balance}.to change{subject.touch_out}.by(1)
+      expect {subject.touch_out}.to change{subject.balance}.by(-1)
     end
+  end
+
+  context 'I need to know where Ive travelled from.' do
+    
   end
 
 end
