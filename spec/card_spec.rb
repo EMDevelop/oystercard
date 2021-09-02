@@ -50,6 +50,7 @@ describe Oystercard do
 
 
     it 'checks that a card touches in and is registered' do
+      subject.top_up(1)
       subject.touch_in
       expect(subject.in_journey).to eq true
     end
@@ -59,11 +60,25 @@ describe Oystercard do
     end
 
     it 'checks that a card touches out and is registered' do
+      subject.top_up(1)
       subject.touch_in
       subject.touch_out
       expect(subject.in_journey).to eq false
     end
   end
 
+  context 'I need to have the minimum amount (£1) for a single journey' do
+    it 'checks that a card without any balance cannot check in' do
+      expect{ subject.touch_in }.to raise_error "Insufficient funds"
+    end
+  end
+
+  context 'When my journey is complete, I need the correct amount deducted from my card' do
+    it 'reduces the cards current balance by 1' do
+      subject.top_up(2)
+      subject.touch_in
+      expect {subject.balance}.to change{subject.touch_out}.by(1)
+    end
+  end
 
 end
